@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect } from "react";
+import "./App.css";
+import { AuthForm } from "./components/AuthForm";
+import { Route, Switch, useHistory } from "react-router-dom";
+import HomePage from "./components/HomePage";
+import { AuthContext } from "./context/ApplicationContext";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const history = useHistory();
+  const {currentUser, loading} = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log(currentUser);
+    if (!currentUser && history.location.pathname !== "/signin") {
+      history.push("/signin");
+    } else if (currentUser && history.location.pathname === "/signin") {
+      history.push("/home");
+    }
+  }, [currentUser, history]);
+
+  return loading ? (
+    <h1>Loading...</h1>
+  ) : (
+    <Switch>
+      <Route path="/home" component={HomePage} />
+      <Route path="/signin" component={AuthForm} />
+    </Switch>
   );
 }
 
